@@ -1,18 +1,25 @@
 # Pistache.io-docker Copyright (C) 2016 Rob Williamson
-FROM debian:jessie
+FROM alpine
 
 MAINTAINER Rob Williamson
 
 WORKDIR /root/build
 
-# Install build dependencies & get the code.
-RUN apt-get update
-RUN apt-get install -y git
-RUN git clone https://github.com/oktal/pistache.git
+# add build dependencies & get the code.
+RUN apk update
+RUN apk add git
+RUN apk add g++
+RUN apk add make
+RUN apk add cmake
+RUN cat /usr/include/stdint.h
+RUN cat /usr/include/bits/alltypes.h
+RUN cat /usr/include/bits/stdint.h
+RUN cat /usr/include/sys/types.h
+RUN cat /usr/include/sys/sysmacros.h
+RUN git clone https://github.com/rob-h-w/pistache.git
 WORKDIR pistache
+RUN git checkout Avoid-major-minor-macros
 RUN git submodule update --init
-RUN apt-get install -y g++
-RUN apt-get install -y cmake
 
 # Build Pistache.io.
 WORKDIR build
@@ -23,7 +30,7 @@ RUN make
 RUN make install
 
 # Create a user & folder for subsequent Pistache.io projects.
-RUN useradd pistache
+RUN adduser -S pistache
 WORKDIR /home/pistache
 RUN chown pistache:users /home/pistache
 
